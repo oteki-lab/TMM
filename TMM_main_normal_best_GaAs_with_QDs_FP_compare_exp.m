@@ -2,44 +2,70 @@ clear all
 close all
 
 %% Define parameters
-h=6.626e-34;    %Planck's constant
-c=2.998e8;      %Speed of light
-q=1.602e-19;    % Elementary charge
+h=6.626e-34; %Planck's constant
+c=2.998e8; %Speed of light
+q=1.602e-19; % Elementary charge
 
-nb_lambda=1001;                              %Number of wavelength
-lambda=linspace(0.9,1.9,nb_lambda)*1e-6;  %Wavelength vector
-length_step=1e-9;                           %discretization step of the stack, for intensity calculation
+nb_lambda=400; %Number of wavelength
+lambda=linspace(0.98,1.34,nb_lambda)*1e-6; %Wavelength vector
+length_step=1e-9; %discretization step of the stack, for intensity calculation
 
-cal_abs=1;      % calculate the absorption and field intensity in each layer
-cal_field=1;    % calculate the field intensity in each layer
-transform_E=0;  % Transform the data into a function of energy
+cal_abs=1; % calculate the absorption and field intensity in each layer
+cal_field=1; % calculate the field intensity in each layer
+transform_E=0; % Transform the data into a function of energy
 
 %% List of layers
 
-n_0=1*ones(1,nb_lambda);                %Incident medium
-n_end=retindice_chen(lambda*1e6,1.7);   %Last medium
+n_0=1*ones(1,nb_lambda); %Incident medium
+n_end=retindice_metal(lambda*1e6,1.9); %Last medium
 % n_end=100i*ones(1,nb_lambda);
 
 % list of indices of the stack
+n(1,:)=retindice_semicond(lambda*1e6,40);
+n(2,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(3,:)=retindice_semicond(lambda*1e6,40);
+n(4,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(5,:)=retindice_semicond(lambda*1e6,40);
+n(6,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(7,:)=retindice_semicond(lambda*1e6,40);
+n(8,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(9,:)=retindice_semicond(lambda*1e6,40);
+n(10,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(11,:)=retindice_semicond(lambda*1e6,40);
+n(12,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(13,:)=retindice_semicond(lambda*1e6,40);
+n(14,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(15,:)=retindice_semicond(lambda*1e6,40);
+n(16,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(17,:)=retindice_semicond(lambda*1e6,40);
+n(18,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(19,:)=retindice_semicond(lambda*1e6,40);
+n(20,:)=retindice_semicond(lambda*1e6,40)+0.1i*ones(1,nb_lambda);
+n(21,:)=retindice_semicond(lambda*1e6,40);
 
-% n=[];
-% n(1,:)=retindice_chen(lambda*1e6,23.33);
-% n(2,:)=retindice_chen(lambda*1e6,23.11);
-% n(1,:)=3.5+0.01i*ones(1,nb_lambda);
-n(1,:)=retindice_semicond(lambda*1e6,4.702);
-% n(5,:)=retindice_chen(lambda*1e6,4.702);
-% n(6,:)=retindice_chen(lambda*1e6,4.621);
-% n(4,:)=retindice_chen(lambda*1e6,23.11);
-% n(4,:)=retindice_chen(lambda*1e6,2.7);
 
 % list of thicknesses of the stack
-
-% d(1)=70e-9;
-% d(2)=40e-9;
-d(1)=1800e-9;
-% d(4)=100e-9;
-% d(5)=100e-9;
-% d(6)=300e-9;
+d(1)=171e-9;
+d(2)=1e-9;
+d(3)=171e-9;
+d(4)=1e-9;
+d(5)=171e-9;
+d(6)=1e-9;
+d(7)=171e-9;
+d(8)=1e-9;
+d(9)=171e-9;
+d(10)=1e-9;
+d(11)=171e-9;
+d(12)=1e-9;
+d(13)=171e-9;
+d(14)=1e-9;
+d(15)=171e-9;
+d(16)=1e-9;
+d(17)=171e-9;
+d(18)=1e-9;
+d(19)=171e-9;
+d(20)=1e-9;
+d(21)=62e-9;
 
 %% Initialization
 
@@ -69,6 +95,10 @@ Omega_m=cell(nb_layers+1,nb_lambda);
 if isempty(n)
     r=(n_0-n_end)./(n_0+n_end);
     t=2*n_0./(n_0+n_end);
+    R=abs(r).^2;
+    T=(real(n_end)./real(n_0)).*abs(t).^2; % Transmittance
+    A=1-R-T; % Absorption of the whole stack
+    
 else
     theta=2*pi*n.*d'./lambda; %Phase shift in a layer
     
@@ -91,11 +121,11 @@ else
         r(j)=Omega{j}(2,1)/Omega{j}(1,1); % Reflection coefficient
         t(j)=1/Omega{j}(1,1); % Transmission coefficient
     end
+    
+    R=abs(r).^2; % Reflectance
+    T=(real(n_end)./real(n_0)).*abs(t).^2; % Transmittance
+    A=1-R-T; % Absorption of the whole stack
 end
-R=abs(r).^2;                            % Reflectance
-T=(real(n_end)./real(n_0)).*abs(t).^2;  % Transmittance
-A=1-R-T;                                % Absorption of the whole stack
-
 %% Calculation of absorptivity for each layer
 
 if cal_abs==1
@@ -159,22 +189,75 @@ if transform_E
         save('Abs_TMM_AlGaAs_GaAs_HCSC_ELO_MBE2_Q3_2_2_wav_300_1000_habs_20_h_both_AlGaAs_82_Au_mirror.mat','E_A','A_GaAs_E','Abs_layer_E','A_total_E')
 end
 
+%% Load data
+[~, ~, raw] = xlsread('Reflection_QDs_FP.xlsx','Sheet1','A2:C602');
+data = reshape([raw{:}],size(raw));
+wavelength = flip(data(:,1))*1e-9; %wavelength in nm
+A_ref = flip(data(:,2))*0.01; %absorption without QDs
+A_QD = flip(data(:,3))*0.01; %absorption with QDs
+clearvars data raw;
 
 %% Plots
 
 Icolors=lines(nb_layers);
 
 figure
-plot(lambda*1e6,1-R);
+plot(lambda*1e6,A+T,'linewidth',3);
+% plot(lambda*1e6,1-R);
 hold on
-plot(lambda*1e6,T);
-plot(lambda*1e6,A);
-ylim([0 1])
+plot(lambda*1e6,A,'linewidth',2);
+plot(lambda*1e6,T,'linewidth',2);
+ylim([0 0.25])
+xlim([min(lambda)*1e6 max(lambda)*1e6])
 xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
-set(gca,'Fontsize',12)
+ylabel('$A$','Interpreter','Latex')
+set(gca,'Fontsize',16)
 set(gca,'XMinorTick','on','YMinorTick','on')
 set(gcf,'color','w');
-legend({'1-R','T','A'})
+legend({'Total','QDs','Ag'})
+box on
+
+
+figure
+plot(lambda*1e6,A+T,'linewidth',3);
+% plot(lambda*1e6,1-R);
+hold on
+plot(wavelength*1e6,A_QD,'linewidth',3);
+ylim([0 0.25])
+xlim([min(lambda)*1e6 max(lambda)*1e6])
+xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
+ylabel('$A$','Interpreter','Latex')
+set(gca,'Fontsize',16)
+set(gca,'XMinorTick','on','YMinorTick','on')
+set(gcf,'color','w');
+legend({'Theory','Experiment'})
+box on
+
+figure
+plot(wavelength*1e6,A_QD,'linewidth',3);
+% plot(lambda*1e6,1-R);
+hold on
+plot(wavelength*1e6,A_ref,'linewidth',3);
+ylim([0 0.25])
+xlim([min(lambda)*1e6 max(lambda)*1e6])
+xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
+ylabel('$A$','Interpreter','Latex')
+set(gca,'Fontsize',16)
+set(gca,'XMinorTick','on','YMinorTick','on')
+set(gcf,'color','w');
+legend({'With QDs','Without QDs'})
+box on
+
+
+figure
+plot(lambda*1e6,A,'Linewidth',3);
+% ylim([0 0.8])
+xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
+ylabel('$A$','Interpreter','Latex')
+set(gca,'Fontsize',16)
+set(gca,'XMinorTick','on','YMinorTick','on')
+set(gcf,'color','w');
+legend({'Mirror','QD','Total'})
 box on
 
 if cal_abs==1
@@ -204,7 +287,7 @@ end
 
 if cal_field==1
     figure
-    [C,h]=contourf(lambda*1e6,stack*1e6,I);
+    contourf(lambda*1e6,stack*1e6,I);
     hold all
     for i=1:nb_layers-1
         plot([lambda(1),lambda(end)]*1e6,[sum(d(1:i)) sum(d(1:i))]*1e6,'linewidth',1,'color','w')
@@ -214,8 +297,8 @@ if cal_field==1
     set(gca,'Fontsize',18)
     set(gca,'YDir','reverse')
     set(gca,'XMinorTick','on','YMinorTick','on')
-    set(gca,'XAxisLocation','top')
-    %set(gca,'xticklabel',[])
+%     set(gca,'XAxisLocation','top')
+%     set(gca,'xticklabel',[])
     set(gcf,'color','w');
     colormap('parula')
 %     h.LevelList=[0 1e-3 1e-2 1e-1 0.25 0.5 1 2 4 8];
@@ -276,3 +359,17 @@ if cal_field==1
     
 end
 
+I_mean=0;
+for j=1:10
+    I_mean=I_mean+0.1*I_z{2*j};
+end
+
+figure
+plot(lambda*1e6,I_mean,'Linewidth',3);
+xlim([min(lambda*1e6) max(lambda*1e6)])
+xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
+ylabel('Mean Absorption Enhancement','Interpreter','Latex')
+set(gca,'Fontsize',16)
+set(gca,'XMinorTick','on','YMinorTick','on')
+set(gcf,'color','w');
+box on
