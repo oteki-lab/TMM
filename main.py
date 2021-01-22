@@ -85,22 +85,22 @@ d.append(1782e-9)
 nb_layers=len(n)
 length_stack=np.sum(d)
 nb_steps=[np.round(x/length_step) for x in d]
-stack=np.arange(0,np.sum(nb_steps))#,length_stack)
+stack=np.arange(0,np.sum(nb_steps)+1)#,length_stack)
 n_tot = np.vstack((n_0, n))
 n_tot = np.vstack((n_tot, n_end))
 Omega=np.empty((nb_lambda,2,2), dtype=np.complex128)
 r=np.zeros(nb_lambda, dtype=np.complex128)
 t=np.zeros(nb_lambda, dtype=np.complex128)
-thetaz=np.zeros((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
+thetaz=np.zeros((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
 Delta=np.empty((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
 Upsilon=np.empty((nb_layers,nb_lambda,2,2), dtype=np.complex128)
-I_z=np.empty((nb_layers,int(np.sum(nb_steps)),nb_lambda))
-A_z=np.empty((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
-LDOS_z=np.empty((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
+I_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda))
+A_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
+LDOS_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
 I_poynting=np.zeros((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
-I_poynting_z=np.empty((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
-A_poynting_z=np.empty((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
-thetaz_poynting=np.zeros((nb_layers,int(np.sum(nb_steps)),nb_lambda), dtype=np.complex128)
+I_poynting_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
+A_poynting_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
+thetaz_poynting=np.zeros((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
 Omega_m_prime=np.empty((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
 Omega_m=np.empty((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
 
@@ -148,17 +148,17 @@ if cal_abs==1:
 if cal_field==1:
     for j in range(0,nb_lambda-1,1):
         for i in range(0,nb_layers,1):
-            for k in range(0,int(nb_steps[i]),1):
+            for k in range(0,int(nb_steps[i])+1,1):
                 thetaz[i][k][j]=(k-1/2)*length_step*2*np.pi*n[i][j]/wl[j]
                 I_z[i][k][j]=(n[i][j]).real/(n_0[j]).real*abs(t[j]*(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz[i][k][j])+Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz[i][k][j])))**2
                 A_z[i][k][j]=(4*np.pi*(n[i][j]/wl[j]).imag)*I_z[i][k][j]
                 #LDOS_z[i][k][j]=abs(1+Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz[i][k][j])/(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz[i][k][j])))**2
 
-            #for k in range(0,int(nb_steps[i]),1):
+            #for k in range(0,int(nb_steps[i])+2,1):
             #    thetaz_poynting[i][k][j]=(k-1)*length_step*2*np.pi*n[i][j]/wl[j]
             #    I_poynting_z[i][k][j]=abs(t[j])**2/(n_0[j]).real#*(n_tot[i+1][j]*np.conj(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz_poynting[i][k][j])+Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz_poynting[i][k][j]))*(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz_poynting[i][k][j])-Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz_poynting[i][k][j]))).real
 
-            #for k in range(0,int(nb_steps[i]-1),1):
+            #for k in range(0,int(nb_steps[i]+1),1):
             #    A_poynting_z[i][k][j]=(I_poynting_z[i][k][j]-I_poynting_z[i][k+1][j])/length_step
     
     I=I_z[0]
