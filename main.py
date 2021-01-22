@@ -16,8 +16,6 @@ matplotlib.font_manager._rebuild()
 plt.rcParams["font.family"]         = "Times New Roman"     #全体のフォントを設定
 plt.rcParams["mathtext.fontset"]    = "stix"                #数式のフォントを設定 
 plt.rcParams["font.size"]           = 12                    #フォントの大きさ
-plt.rcParams["xtick.direction"]     = "in"                  #x軸の目盛線を内向きへ
-plt.rcParams["ytick.direction"]     = "in"                  #y軸の目盛線を内向きへ
 plt.rcParams["xtick.minor.visible"] = True                  #x軸補助目盛りの追加
 plt.rcParams["ytick.minor.visible"] = True                  #y軸補助目盛りの追加
 plt.rcParams["xtick.major.width"]   = 1.5                   #x軸主目盛り線の線幅
