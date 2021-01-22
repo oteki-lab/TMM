@@ -151,8 +151,7 @@ if cal_field==1:
             for k in range(0,int(nb_steps[i]),1):
                 thetaz[i][k][j]=(k-1/2)*length_step*2*np.pi*n[i][j]/wl[j]
                 I_z[i][k][j]=(n[i][j]).real/(n_0[j]).real*abs(t[j]*(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz[i][k][j])+Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz[i][k][j])))**2
-
-                #A_z[i][k][j]=(4*np.pi*(n[i][j]/wl[j]).imag)*I_z[i][k][j]
+                A_z[i][k][j]=(4*np.pi*(n[i][j]/wl[j]).imag)*I_z[i][k][j]
                 #LDOS_z[i][k][j]=abs(1+Omega_m_prime[i][j][1][0]*np.exp(-1j*thetaz[i][k][j])/(Omega_m_prime[i][j][0][0]*np.exp(1j*thetaz[i][k][j])))**2
 
             #for k in range(0,int(nb_steps[i]),1):
@@ -163,13 +162,13 @@ if cal_field==1:
             #    A_poynting_z[i][k][j]=(I_poynting_z[i][k][j]-I_poynting_z[i][k+1][j])/length_step
     
     I=I_z[0]
-    #A_local=A_z[0]
+    A_local=A_z[0]
     #LDOS=LDOS_z[0]
     #A_poynting_local=A_poynting_z[0]
     #I_poynting_local=I_poynting_z[0]
     for i in range(1,nb_layers,1):
         I=np.concatenate([I,I_z[i]],axis=0)
-        #A_local=np.concatenate([A_local,A_z[i]],axis=0)
+        A_local=np.concatenate([A_local,A_z[i]],axis=0)
         #LDOS=np.concatenate([LDOS,LDOS_z[i]],axis=0)
         #A_poynting_local=np.concatenate([A_poynting_local,A_poynting_z[i]],axis=0)
         #I_poynting_local=np.concatenate([I_poynting_local,I_poynting_z[i][2:-1,:]],axis=0)   
@@ -181,7 +180,7 @@ if cal_field==1:
 if cal_abs==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
-        'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 1]},
+        'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
         'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
         'label_positions': {'x':'bottom', 'y': 'left'},
         'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
@@ -199,7 +198,7 @@ if cal_abs==1:
 if cal_rta==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
-        'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 1]},
+        'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
         'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
         'label_positions': {'x':'bottom', 'y': 'left'},
         'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
