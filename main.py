@@ -50,11 +50,11 @@ h=6.626e-34    # Planck's constant
 c=2.998e8      # Speed of light
 q=1.602e-19    # Elementary charge
 
-wl_min = 0.5                                # [um]
-wl_max = 1.8                                # [um]
-nb_lambda = int((wl_max-wl_min)*1e3)+1      # Number of wavelength
-wl = np.linspace(0.5,1.8,nb_lambda)*1e-6    # Wavelength vector
-length_step = 1e-9                          # discretization step of the stack, for intensity calculation
+wl_min = 0.92                                   # [um]
+wl_max = 1.34                                   # [um]
+nb_lambda = int((wl_max-wl_min)*1e3)+1          # Number of wavelength
+wl = np.linspace(wl_min,wl_max,nb_lambda)*1e-6  # Wavelength vector
+length_step = 1e-9                              # discretization step of the stack, for intensity calculation
 
 cal_rta = 1         # calculate the absorption
 cal_abs = 1         # calculate the R, T, A
