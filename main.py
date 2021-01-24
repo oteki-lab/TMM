@@ -22,20 +22,22 @@ plt.rcParams["ytick.minor.size"]    = 2                     #y軸補助目盛り
 plt.rcParams["axes.linewidth"]      = 1.5                   #囲みの太さ
 
 def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_ticks, invert_axis):
-    fig, ax = plt.subplots(figsize=figsize)
-    ax.set_xlim(lims['x'])
-    ax.set_ylim(lims['y'])
-    ax.set_xlabel(labels['x'])
-    ax.set_ylabel(labels['y'])
-    ax.xaxis.set_label_position(label_positions['x'])
-    ax.yaxis.set_label_position(label_positions['y'])
-    ax.xaxis.set_ticks_position(label_positions['x'])
-    ax.yaxis.set_ticks_position(label_positions['y'])
-    ax.tick_params(axis='both', which='major', **major_ticks)
-    ax.tick_params(axis='both', which='minor', **minor_ticks)
-    if invert_axis['x']: ax.invert_xaxis()
-    if invert_axis['y']: ax.invert_yaxis()
-    return fig, ax
+    _fig, _ax = plt.subplots(figsize=figsize)
+    _ax.set_xlim(lims['x'])
+    _ax.set_ylim(lims['y'])
+    _ax.set_xlabel(labels['x'])
+    _ax.set_ylabel(labels['y'])
+    _ax.xaxis.set_label_position(label_positions['x'])
+    _ax.yaxis.set_label_position(label_positions['y'])
+    _ax.xaxis.set_ticks_position(label_positions['x'])
+    _ax.yaxis.set_ticks_position(label_positions['y'])
+    _ax.tick_params(axis='both', which='major', **major_ticks)
+    _ax.tick_params(axis='both', which='minor', **minor_ticks)
+    if invert_axis['x']:
+        _ax.invert_xaxis()
+    if invert_axis['y']:
+        _ax.invert_yaxis()
+    return _fig, _ax
 
 
 # Define parameters
@@ -54,67 +56,42 @@ cal_abs = 1         # calculate the R, T, A
 cal_field = 1       # calculate the field intensity in each layer
 transform_E = 0     # Transform the data into a function of energy
 
-## List of layers
-n_0 = 1*np.ones(nb_lambda)                  # Incident medium
-#n_end=retindice_chen(wl*1e6,1.7)
-mirror = pd.read_csv('mirror.csv')
-nmirror = interpolate.interp1d(mirror['wl'], mirror['n1'] + 1j*mirror['n2'], kind='cubic')
-n_end = nmirror(wl*1e6)                     # Last medium
 
-## list of indices of the stack
-#n[0]=retindice_semicond(wl*1e6,4.702)
-n = []
-GaAs = pd.read_csv('GaAs.csv')
-nGaAs = interpolate.interp1d(GaAs['wl'], GaAs['n1'] + 1j*GaAs['n2'], kind='cubic')
-QD = pd.read_csv('QD.csv')
-nQD = interpolate.interp1d(QD['wl'], QD['n1'] + 1j*QD['n2'], kind='cubic')
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nQD(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
-n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+## list of indices
+indice = {}
+for m in ['GaAs', 'QD', 'mirror']:
+    ti = pd.read_csv(m+'.csv')
+    indice[m] = interpolate.interp1d(ti['wl'], ti['n1'] + 1j*ti['n2'], kind='cubic')
 
+## List of layers (indices, thickness)
+n_0 = np.ones(nb_lambda)                  # Incident medium
+layers = pd.DataFrame([
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     171e-9],
+    [indice['QD'](wl*1e6),       1e-9],
+    [indice['GaAs'](wl*1e6),     62e-9]
+], columns=['n', 'd'])
+n_end = indice['mirror'](wl*1e6)
 
-## list of thicknesses of the stack
-d=[]
-#d.append(1782e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(171e-9)
-d.append(1e-9)
-d.append(62e-9)
+n = layers.n.values.tolist()
+d = layers.d.values.tolist()
 
 ## Initialization
 nb_layers=len(n)
@@ -265,8 +242,3 @@ if cal_field==1:
     for i in range(0,nb_layers-1,1):
         ax.plot([wl[0]*1e6, wl[-1]*1e6], [sum(d[0:i])*1e6, sum(d[0:i])*1e6], color='white',  linestyle='solid', linewidth = 1.0)
     plt.show()
-
-"""
-    for i in range(0,nb_layers-1):
-        plot([wl[0], wl[-1]]*1e6, [sum(d[0:i]), sum(d[0:i])]*1e6, 'linewidth',1, 'color','w')
-"""
