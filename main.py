@@ -1,20 +1,13 @@
-
-import os
-import csv
-import datetime
 import pandas as pd
-from scipy.optimize import curve_fit
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import glob
 from scipy import interpolate
 
 del matplotlib.font_manager.weight_dict['roman']
 matplotlib.font_manager._rebuild()
 plt.rcParams["font.family"]         = "Times New Roman"     #全体のフォントを設定
-plt.rcParams["mathtext.fontset"]    = "stix"                #数式のフォントを設定 
+plt.rcParams["mathtext.fontset"]    = "stix"                #数式のフォントを設定
 plt.rcParams["font.size"]           = 12                    #フォントの大きさ
 plt.rcParams["xtick.minor.visible"] = True                  #x軸補助目盛りの追加
 plt.rcParams["ytick.minor.visible"] = True                  #y軸補助目盛りの追加
@@ -38,12 +31,12 @@ def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_tic
     ax.yaxis.set_label_position(label_positions['y'])
     ax.xaxis.set_ticks_position(label_positions['x'])
     ax.yaxis.set_ticks_position(label_positions['y'])
-    ax.tick_params(axis='both', which='major', **major_ticks)#direction='in', bottom=True, top=True, left=True, right=True)#, length=6, width=2, colors='r', grid_color='r', grid_alpha=0.5)
-    ax.tick_params(axis='both', which='minor', **minor_ticks)#direction='in', bottom=True, top=True, left=True, right=True)#, length=6, width=2, colors='r', grid_color='r', grid_alpha=0.5)
+    ax.tick_params(axis='both', which='major', **major_ticks)
+    ax.tick_params(axis='both', which='minor', **minor_ticks)
     if invert_axis['x']: ax.invert_xaxis()
     if invert_axis['y']: ax.invert_yaxis()
     return fig, ax
-    
+
 
 # Define parameters
 h=6.626e-34    # Planck's constant
@@ -63,7 +56,7 @@ transform_E = 0     # Transform the data into a function of energy
 
 ## List of layers
 n_0 = 1*np.ones(nb_lambda)                  # Incident medium
-#n_end=retindice_chen(wl*1e6,1.7)   
+#n_end=retindice_chen(wl*1e6,1.7)
 mirror = pd.read_csv('mirror.csv')
 nmirror = interpolate.interp1d(mirror['wl'], mirror['n1'] + 1j*mirror['n2'], kind='cubic')
 n_end = nmirror(wl*1e6)                     # Last medium
@@ -74,10 +67,32 @@ n = []
 GaAs = pd.read_csv('GaAs.csv')
 nGaAs = interpolate.interp1d(GaAs['wl'], GaAs['n1'] + 1j*GaAs['n2'], kind='cubic')
 n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+n.append(nGaAs(wl*1e6))  #n = pd.DataFrame({ 0 :GaAs['n1'] + 1j*GaAs['n2']})
+
 
 ## list of thicknesses of the stack
 d=[]
-d.append(1782e-9)
+#d.append(1782e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(173e-9)
+d.append(52e-9)
 
 ## Initialization
 nb_layers=len(n)
@@ -110,17 +125,17 @@ else:
     theta = []  #Phase shift in a layer
     for x,nx in enumerate(n):
         theta.append([2*np.pi*nx[i]*d[x]/wl[i] for i,ni in enumerate(nx)])
-    
-    for j in range(0,nb_lambda-1,1):
+
+    for j in range(0,nb_lambda,1):
         for i in range(nb_layers-1,-1,-1):
             Delta[i+1][j]=(1/(2*n_tot[i+1][j]))*(n_tot[i+1][j]+n_tot[i+2][j]*np.array([[1,-1],[-1,1]]))
 
             if i==nb_layers-1:
-                Omega_m[-1][j]=(Delta[-1][j]) # transfer matrix between layers 1 and i
+                Omega_m[-1][j]=Delta[-1][j] # transfer matrix between layers 1 and i
             else:
-                Omega_m[i+1][j]=Delta[i+1][j]*Omega_m_prime[i+1][j]
-            
-            Upsilon[i][j]=[[np.exp(-1j*theta[i][j]), 0], [0, np.exp(1j*theta[i][j])]]    
+                Omega_m[i+1][j]=np.dot(Delta[i+1][j], Omega_m_prime[i+1][j])
+
+            Upsilon[i][j]=[[np.exp(-1j*theta[i][j]), 0], [0, np.exp(1j*theta[i][j])]]
             Omega_m_prime[i][j]=np.dot(Upsilon[i][j], Omega_m[i+1][j])
 
         Delta[0][j]=(1/(2*n_tot[0][j]))*(n_tot[0][j]+n_tot[1][j]*np.array([[1,-1],[-1,1]]))
@@ -133,18 +148,18 @@ else:
 R=abs(r)**2                         # Reflectance
 T=(n_end.real/n_0.real)*abs(t)**2   # Transmittance
 A=1-R-T                             # Absorption of the whole stack
-                                                                                                                                                                                                      
+
 
 ## Calculation of absorptivity for each layer
 if cal_abs==1:
-    for j in range(0,nb_lambda-1,1):
+    for j in range(0,nb_lambda,1):
         for i in range(0,nb_layers,1):
             I_poynting[i][j]=abs(t[j])**2/(n_0[j]).real*(n_tot[i+1][j]*np.conj(Omega_m_prime[i][j][0][0]+Omega_m_prime[i][j][1][0])*(Omega_m_prime[i][j][0][0]-Omega_m_prime[i][j][1][0])).real
     Abs_layer=I_poynting[0:nb_layers-1,:]-I_poynting[1:nb_layers,:]
 
 ## Calculation of intensity of electric field with depth
 if cal_field==1:
-    for j in range(0,nb_lambda-1,1):
+    for j in range(0,nb_lambda,1):
         for i in range(0,nb_layers,1):
             for k in range(0,int(nb_steps[i])+1,1):
                 thetaz[i][k][j]=(k-1/2)*length_step*2*np.pi*n[i][j]/wl[j]
@@ -158,18 +173,18 @@ if cal_field==1:
 
             #for k in range(0,int(nb_steps[i]+1),1):
             #    A_poynting_z[i][k][j]=(I_poynting_z[i][k][j]-I_poynting_z[i][k+1][j])/length_step
-    
-    I=I_z[0]
-    A_local=A_z[0]
+
+    I=I_z[0][:int(nb_steps[0])+1]
+    A_local=A_z[0][:int(nb_steps[0])+1]
     #LDOS=LDOS_z[0]
     #A_poynting_local=A_poynting_z[0]
     #I_poynting_local=I_poynting_z[0]
     for i in range(1,nb_layers,1):
-        I=np.concatenate([I,I_z[i]],axis=0)
-        A_local=np.concatenate([A_local,A_z[i]],axis=0)
+        I=np.concatenate([I,I_z[i][:int(nb_steps[i])]],axis=0)
+        A_local=np.concatenate([A_local,A_z[i][:int(nb_steps[i])]],axis=0)
         #LDOS=np.concatenate([LDOS,LDOS_z[i]],axis=0)
         #A_poynting_local=np.concatenate([A_poynting_local,A_poynting_z[i]],axis=0)
-        #I_poynting_local=np.concatenate([I_poynting_local,I_poynting_z[i][2:-1,:]],axis=0)   
+        #I_poynting_local=np.concatenate([I_poynting_local,I_poynting_z[i][2:-1,:]],axis=0)
     #I_poynting_local=(I_poynting_local[2:-1,:]+I_poynting_local[1:-2,:])/2
 
 
