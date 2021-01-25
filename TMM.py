@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 
 def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_ticks, invert_axis):
@@ -38,7 +37,7 @@ def cal_TMM(indice, wl_min, wl_max, layers, m_end):
     n_0 = np.ones(nb_lambda)                  # Incident medium
     layers['n'] = [indice[m](wl*1e6) for m in layers.m]
     n_end = indice[m_end](wl*1e6)
-    
+
     m = layers.m.values.tolist()
     n = layers.n.values.tolist()
     d = layers.d.values.tolist()

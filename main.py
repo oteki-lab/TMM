@@ -1,11 +1,9 @@
 import pandas as pd
 import numpy as np
 from scipy import interpolate
-import TMM as tmm
-import pandas as pd
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import TMM as tmm
 
 del matplotlib.font_manager.weight_dict['roman']
 matplotlib.font_manager._rebuild()
@@ -86,7 +84,6 @@ wl, R, T, A, df_d, df_m, df_I = tmm.cal_TMM(indice, wl_min, wl_max, layers, m_en
 
 df_mI = pd.concat([df_m, df_I], axis=1)
 df_mdI = pd.concat([df_m, df_d, df_I], axis=1)
-print(df_mdI[df_mdI['material'] == 'QD'].depth)
 
 ## Plots
 # Total, QDs, Mirror
