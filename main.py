@@ -63,33 +63,34 @@ for m in ['GaAs', 'QD', 'mirror']:
     ti = pd.read_csv(m+'.csv')
     indice[m] = interpolate.interp1d(ti['wl'], ti['n1'] + 1j*ti['n2'], kind='cubic')
 
-## List of layers (indices, thickness)
+## List of layers (material, indices, thickness)
 n_0 = np.ones(nb_lambda)                  # Incident medium
 layers = pd.DataFrame([
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     171e-9],
-    [indice['QD'](wl*1e6),       1e-9],
-    [indice['GaAs'](wl*1e6),     62e-9]
-], columns=['n', 'd'])
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     171e-9],
+    ['QD',      indice['QD'](wl*1e6),       1e-9],
+    ['GaAs',    indice['GaAs'](wl*1e6),     62e-9]
+], columns=['m', 'n', 'd'])
 n_end = indice['mirror'](wl*1e6)
 
+m = layers.m.values.tolist()
 n = layers.n.values.tolist()
 d = layers.d.values.tolist()
 
@@ -114,6 +115,12 @@ A_poynting_z=np.empty((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.co
 thetaz_poynting=np.zeros((nb_layers,int(np.sum(nb_steps)+1),nb_lambda), dtype=np.complex128)
 Omega_m_prime=np.empty((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
 Omega_m=np.empty((nb_layers+1,nb_lambda,2,2), dtype=np.complex128)
+
+material=[m[0]]
+for i in range(1,nb_layers+1,1):
+    for j in range(int(np.sum(d[:i-1])*1e9), int(np.sum(d[:i])*1e9)):
+        material.append(m[i-1])
+
 
 ## Calculation of R and T
 if len(n)==0:
@@ -185,6 +192,10 @@ if cal_field==1:
         #I_poynting_local=np.concatenate([I_poynting_local,I_poynting_z[i][2:-1,:]],axis=0)
     #I_poynting_local=(I_poynting_local[2:-1,:]+I_poynting_local[1:-2,:])/2
 
+df_m = pd.DataFrame(material, columns=['material'])
+df_d = pd.DataFrame(stack, columns=['depth'])
+df_I = pd.DataFrame(I, columns=(wl*1e9).astype(np.int64))
+
 
 ## Plots
 # Total, QDs, Mirror
@@ -240,4 +251,21 @@ if cal_field==1:
     cbar.set_label(r'Normalized Field Intensity $\, \|E\|^2/\|E_0\|^2$')
     for i in range(0,nb_layers-1,1):
         ax.plot([wl[0]*1e6, wl[-1]*1e6], [sum(d[0:i])*1e6, sum(d[0:i])*1e6], color='white',  linestyle='solid', linewidth = 1.0)
+    plt.show()
+
+if cal_field==1:
+    #df_mdI = pd.concat([df_m, df_d, df_I], axis=1)
+    df_mI = pd.concat([df_m, df_I], axis=1)
+    fig, ax = graph_setting(**{
+        'figsize': (8,6),
+        'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
+        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
+        'label_positions': {'x':'bottom', 'y': 'left'},
+        'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
+        'minor_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
+        'invert_axis': {'x': False, 'y': False}
+    })
+    ax.plot(wl*1e6, (df_mI[df_mI['material'] == 'QD'].mean()), label="Total", color='gold',  linestyle='solid', linewidth = 1.0)
+    plt.legend()
+    plt.tight_layout()
     plt.show()
