@@ -94,7 +94,7 @@ if cal_abs==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
         'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
-        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
+        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'Absorption (%)'},
         'label_positions': {'x':'bottom', 'y': 'left'},
         'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
         'minor_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
