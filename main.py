@@ -45,6 +45,7 @@ def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_tic
 cal_rta = 1         # calculate the absorption
 cal_abs = 1         # calculate the R, T, A
 cal_field = 1       # calculate the field intensity in each layer
+cal_QD = 1       # calculate the field intensity in each layer
 
 wl_min = 0.92                                   # [um]
 wl_max = 1.34                                   # [um]
@@ -86,7 +87,6 @@ wl, R, T, A, df_d, df_m, df_I = tmm.cal_TMM(indice, wl_min, wl_max, layers, m_en
 
 df_mI = pd.concat([df_m, df_I], axis=1)
 df_mdI = pd.concat([df_m, df_d, df_I], axis=1)
-print(df_mdI[df_mdI['material'] == 'QD'].depth)
 
 ## Plots
 # Total, QDs, Mirror
@@ -125,7 +125,7 @@ if cal_rta==1:
     plt.tight_layout()
     plt.show()
 
-if cal_field==1:
+if cal_QD==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
         'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
@@ -155,6 +155,7 @@ if cal_field==1:
     cbar.ax.tick_params(axis='y', direction='out')
     cbar.ax.minorticks_off()
     cbar.set_label(r'Normalized Field Intensity $\, \|E\|^2/\|E_0\|^2$')
-    for d in df_mdI[df_mdI['material'] == 'QD'].depth:
-        ax.plot([wl[0]*1e6, wl[-1]*1e6], [d/1e3, d/1e3], color='white',  linestyle='solid', linewidth = 1.0)
+    if cal_QD==1:
+        for d in df_mdI[df_mdI['material'] == 'QD'].depth:
+            ax.plot([wl[0]*1e6, wl[-1]*1e6], [d/1e3, d/1e3], color='white',  linestyle='solid', linewidth = 1.0)
     plt.show()
