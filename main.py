@@ -42,10 +42,6 @@ def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_tic
         _ax.invert_yaxis()
     return _fig, _ax
 
-def hover(event):
-    plt.set_data(event.xdata,event.ydata)
-    plt.draw()
-
 cal_rta = 0         # calculate the absorption
 cal_abs = 0         # calculate the R, T, A
 cal_field = 1       # calculate the field intensity in each layer
