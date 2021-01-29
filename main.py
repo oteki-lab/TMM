@@ -42,10 +42,14 @@ def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_tic
         _ax.invert_yaxis()
     return _fig, _ax
 
-cal_rta = 1         # calculate the absorption
-cal_abs = 1         # calculate the R, T, A
+def hover(event):
+    plt.set_data(event.xdata,event.ydata)
+    plt.draw()
+
+cal_rta = 0         # calculate the absorption
+cal_abs = 0         # calculate the R, T, A
 cal_field = 1       # calculate the field intensity in each layer
-cal_QD = 1       # calculate the field intensity in each layer
+cal_QD = 0       # calculate the field intensity in each layer
 
 wl_min = 0.92                                   # [um]
 wl_max = 1.34                                   # [um]
@@ -151,6 +155,7 @@ if cal_field==1:
         'invert_axis': {'x': False, 'y': True}
     })
     img = ax.contourf(wl*1e6,df_d.melt().value/1e3, df_I, levels=np.arange(round(df_I.min().min()),round(df_I.max().max())+0.1,0.1), cmap='plasma')
+    
     cbar = plt.colorbar(img, ticks=np.arange(round(df_I.min().min()),round(df_I.max().max())+2,2))
     cbar.ax.tick_params(axis='y', direction='out')
     cbar.ax.minorticks_off()
@@ -158,4 +163,7 @@ if cal_field==1:
     if cal_QD==1:
         for d in df_mdI[df_mdI['material'] == 'QD'].depth:
             ax.plot([wl[0]*1e6, wl[-1]*1e6], [d/1e3, d/1e3], color='white',  linestyle='solid', linewidth = 1.0)
+    
+    func = interpolate.interp2d(wl*1e6,df_d.melt().value/1e3, df_I)
+    plt.gca().format_coord = (lambda x,y: 'Wavelength={x:.3f}um, Depth={y:.4f}um, I={z:.1f}'.format(x=x, y=y, z=np.take(func(x, y), 0)))
     plt.show()
