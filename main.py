@@ -40,9 +40,10 @@ def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_tic
         _ax.invert_yaxis()
     return _fig, _ax
 
-cal_rta = 1         # calculate the absorption
-cal_abs = 1         # calculate the R, T, A
+cal_rta = 0         # calculate the absorption
+cal_abs = 0         # calculate the R, T, A
 cal_field = 1       # calculate the field intensity in each layer
+cal_QD = 0       # calculate the field intensity in each layer
 
 wl_min = 0.92                                   # [um]
 wl_max = 1.34                                   # [um]
@@ -91,7 +92,7 @@ if cal_abs==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
         'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
-        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
+        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'Absorption (%)'},
         'label_positions': {'x':'bottom', 'y': 'left'},
         'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
         'minor_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
@@ -122,11 +123,11 @@ if cal_rta==1:
     plt.tight_layout()
     plt.show()
 
-if cal_field==1:
+if cal_QD==1:
     fig, ax = graph_setting(**{
         'figsize': (8,6),
         'lims': {'x':[wl[0]*1e6, wl[-1]*1e6], 'y': [0, 100]},
-        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': 'R, T, A (%)'},
+        'labels': {'x':r'Wavelength $\, \mathrm{(\mu m)}$', 'y': r'Normalized Field Intensity $\, \|E\|^2/\|E_0\|^2$'},
         'label_positions': {'x':'bottom', 'y': 'left'},
         'major_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
         'minor_ticks': {'direction': 'in', 'bottom': True, 'top': True, 'left': True, 'right': True},
@@ -148,10 +149,15 @@ if cal_field==1:
         'invert_axis': {'x': False, 'y': True}
     })
     img = ax.contourf(wl*1e6,df_d.melt().value/1e3, df_I, levels=np.arange(round(df_I.min().min()),round(df_I.max().max())+0.1,0.1), cmap='plasma')
+    
     cbar = plt.colorbar(img, ticks=np.arange(round(df_I.min().min()),round(df_I.max().max())+2,2))
     cbar.ax.tick_params(axis='y', direction='out')
     cbar.ax.minorticks_off()
     cbar.set_label(r'Normalized Field Intensity $\, \|E\|^2/\|E_0\|^2$')
-    for d in df_mdI[df_mdI['material'] == 'QD'].depth:
-        ax.plot([wl[0]*1e6, wl[-1]*1e6], [d/1e3, d/1e3], color='white',  linestyle='solid', linewidth = 1.0)
+    if cal_QD==1:
+        for d in df_mdI[df_mdI['material'] == 'QD'].depth:
+            ax.plot([wl[0]*1e6, wl[-1]*1e6], [d/1e3, d/1e3], color='white',  linestyle='solid', linewidth = 1.0)
+    
+    func = interpolate.interp2d(wl*1e6,df_d.melt().value/1e3, df_I)
+    plt.gca().format_coord = (lambda x,y: 'Wavelength={x:.3f}um, Depth={y:.4f}um, I={z:.1f}'.format(x=x, y=y, z=np.take(func(x, y), 0)))
     plt.show()
