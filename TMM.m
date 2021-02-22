@@ -28,7 +28,6 @@ Omega_m=cell(nb_layers+1,nb_lambda);
 
 
 %% Calculation of R and T
-
 if isempty(n)
     r=(n_0-n_end)./(n_0+n_end);
     t=2*n_0./(n_0+n_end);
@@ -75,7 +74,6 @@ if cal_abs==1
 end
 
 %% Calculation of intensity of electric field with depth
-
 if cal_field==1
     for j=1:nb_lambda
         for i=1:nb_layers
@@ -113,7 +111,6 @@ if cal_field==1
 end
 
 %% Getting the energy vector
-
 if transform_E
     E_A=fliplr(h*c./(q*(lambda/1e6)));
     A_GaAs_E=fliplr(Abs_layer(2,:));
@@ -129,40 +126,6 @@ end
 
 %% Plots
 if cal_field==1
-    figure
-    contourf(lambda,stack/1e3,I);
-    hold all
-    for i=1:nb_layers-1
-        plot([lambda(1),lambda(end)],[sum(d(1:i)) sum(d(1:i))]/1e3,'linewidth',1,'color','w')
-    end
-    xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
-    ylabel('depth $\: \mathrm{(\mu m)}$','Interpreter','Latex')
-    set(gca,'Fontsize',18)
-    set(gca,'YDir','reverse')
-    set(gca,'XMinorTick','on','YMinorTick','on')
-%     set(gca,'XAxisLocation','top')
-%     set(gca,'xticklabel',[])
-    set(gcf,'color','w');
-    colormap('parula')
-%     h.LevelList=[0 1e-3 1e-2 1e-1 0.25 0.5 1 2 4 8];
-    box on
-    c=colorbar;
-    c.Label.String = 'Normalized field intensity';
-    ylim([0 inf])
-
-    figure
-    plot(lambda,A+T,'linewidth',3);
-    % plot(lambda,1-R);
-    hold on
-    plot(lambda,A,'linewidth',2);
-    plot(lambda,T,'linewidth',2);
-    ylim([0 1])
-    xlim([min(lambda) max(lambda)])
-    xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
-    ylabel('$A$','Interpreter','Latex')
-    set(gca,'Fontsize',16)
-    set(gca,'XMinorTick','on','YMinorTick','on')
-    set(gcf,'color','w');
-    legend({'Total','QDs','Ag'})
-    box on
+    drawGraph('normalized_field_intensity', lambda,stack,I,nb_layers,d)
+    drawGraph('absorption', lambda,A,T)
 end

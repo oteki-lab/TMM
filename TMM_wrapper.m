@@ -11,8 +11,10 @@ back_b = 50;
 surf_b = 25;
 spacer = 25;
 intensity = 12;
+height_QD = 1;
 
-%% List of layers
+%% without QD layers
+% List of layers
 n_0=ones(1,nb_lambda); %Incident medium
 n_end=retindice_metal(lambda,1.9); %Last medium
 
@@ -36,32 +38,19 @@ for i=2:height(I_sorted)
 end
 QD_table = sortrows(QD_table,2);
 
-%Plot
-figure
-plot(I_table(:,1),I_table(:,2),'Linewidth',3);
-hold all
-for i=1:height(QD_table)
-    plot([0 QD_table(i,1)],[QD_table(i,2) QD_table(i,2)],'linewidth',1,'color','r')
-end
-ylim([0 sum(d)])
-set(gca,'YDir','reverse')
-xlabel('Mean Absorption Enhancement','Interpreter','Latex')
-ylabel('Depth (nm)','Interpreter','Latex')
-set(gca,'Fontsize',16)
-set(gca,'XMinorTick','on','YMinorTick','on')
-set(gcf,'color','w');
-box on
+drawGraph('Absorption_Enhancement_Depth',I_table,QD_table,d)    %Plot Absorption Enhancement v.s. Depth
 
-%with QD layers
+%% with QD layers
+% List of layers
 d_max = sum(d);
 d_temp=0;
 for i=1:height(QD_table)
   if d_temp<QD_table(i,2)
       n(2*i-1,:) = retindice_semicond(lambda,40);
-      d(2*i-1)   = (QD_table(i,2)-d_temp-1);
+      d(2*i-1)   = (QD_table(i,2)-d_temp-height_QD);
       q(2*i-1)   = 0;
       n(2*i,:)   = retindice_semicond(lambda,81.1);
-      d(2*i)     = 1;
+      d(2*i)     = height_QD;
       q(2*i)     = 1;
       d_temp     = QD_table(i,2);
   end
@@ -80,12 +69,5 @@ for j=1:length(q)
 end
 I_mean = I_mean/length(find(q==1));
 
-figure
-plot(lambda,I_mean,'Linewidth',3);
-xlim([min(lambda) max(lambda)])
-xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
-ylabel('Mean Absorption Enhancement','Interpreter','Latex')
-set(gca,'Fontsize',16)
-set(gca,'XMinorTick','on','YMinorTick','on')
-set(gcf,'color','w');
-box on
+drawGraph('Absorption_Enhancement_Lambda',lambda,I_mean)    %Plot Absorption Enhancement v.s. Lambda
+
