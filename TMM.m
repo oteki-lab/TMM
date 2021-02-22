@@ -22,10 +22,6 @@ I_z=cell(1,nb_layers);
 I_poynting=zeros(nb_layers+1,nb_lambda);
 Omega_m_prime=cell(nb_layers+1,nb_lambda);
 Omega_m=cell(nb_layers+1,nb_lambda);
-% I_poynting_z=cell(1,nb_lambda);
-% A_poynting_z=zeros(nb_layers,sum(nb_steps),nb_lambda);
-% A_z=zeros(nb_layers,sum(nb_steps),nb_lambda);
-
 
 %% Calculation of R and T
 if isempty(n)
@@ -34,7 +30,6 @@ if isempty(n)
     R=abs(r).^2;
     T=(real(n_end)./real(n_0)).*abs(t).^2; % Transmittance
     A=1-R-T; % Absorption of the whole stack
-    
 else
     theta=2*pi*n.*d'.*length_step./(lambda/1e6); %Phase shift in a layer
     
@@ -62,8 +57,8 @@ else
     T=(real(n_end)./real(n_0)).*abs(t).^2; % Transmittance
     A=1-R-T; % Absorption of the whole stack
 end
-%% Calculation of absorptivity for each layer
 
+%% Calculation of absorptivity for each layer
 if cal_abs==1
     for j=1:nb_lambda
         for i=1:nb_layers+1
@@ -71,6 +66,21 @@ if cal_abs==1
         end
     end
     Abs_layer=I_poynting(1:nb_layers,:)-I_poynting(2:nb_layers+1,:);
+    
+    % Getting the energy vector
+    if transform_E
+        E_A=fliplr(h*c./(q*(lambda/1e6)));
+        A_GaAs_E=fliplr(Abs_layer(2,:));
+        Abs_layer_E=fliplr(Abs_layer);
+        A_total_E=fliplr(A+T);
+
+        figure
+        plot(E_A,A_total_E,'linewidth',3)
+        xlim([1.3 3.5])
+            save('Abs_TMM_AlGaAs_GaAs_HCSC_ELO_MBE2_Q3_2_2_wav_300_1000_habs_20_h_both_AlGaAs_82_Au_mirror.mat','E_A','A_GaAs_E','Abs_layer_E','A_total_E')
+    end
+
+    drawGraph('absorption', lambda,A,T) % Plots
 end
 
 %% Calculation of intensity of electric field with depth
@@ -108,24 +118,5 @@ if cal_field==1
     
     I_poynting_local=(I_poynting_local(2:end,:)+I_poynting_local(1:end-1,:))/2;
     
-end
-
-%% Getting the energy vector
-if transform_E
-    E_A=fliplr(h*c./(q*(lambda/1e6)));
-    A_GaAs_E=fliplr(Abs_layer(2,:));
-    Abs_layer_E=fliplr(Abs_layer);
-    A_total_E=fliplr(A+T);
-    
-    figure
-    plot(E_A,A_total_E,'linewidth',3)
-    xlim([1.3 3.5])
-        save('Abs_TMM_AlGaAs_GaAs_HCSC_ELO_MBE2_Q3_2_2_wav_300_1000_habs_20_h_both_AlGaAs_82_Au_mirror.mat','E_A','A_GaAs_E','Abs_layer_E','A_total_E')
-end
-
-
-%% Plots
-if cal_field==1
-    drawGraph('normalized_field_intensity', lambda,stack,I,nb_layers,d)
-    drawGraph('absorption', lambda,A,T)
+    drawGraph('normalized_field_intensity', lambda,stack,I,nb_layers,d) % Plots
 end
