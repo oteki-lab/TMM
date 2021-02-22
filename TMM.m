@@ -37,7 +37,7 @@ if isempty(n)
     A=1-R-T; % Absorption of the whole stack
     
 else
-    theta=2*pi*n.*d'.*length_step./lambda; %Phase shift in a layer
+    theta=2*pi*n.*d'.*length_step./(lambda/1e6); %Phase shift in a layer
     
     for j=1:nb_lambda
         for i=nb_layers:-1:1
@@ -80,13 +80,13 @@ if cal_field==1
     for j=1:nb_lambda
         for i=1:nb_layers
             for k=1:nb_steps(i)
-                thetaz(i,k,j)=(k-1/2)*length_step*2*pi*n(i,j)/lambda(j);
+                thetaz(i,k,j)=(k-1/2)*length_step*2*pi*n(i,j)/(lambda(j)/1e6);
                 I_z{i}(k,j)=real(n(i,j))/real(n_0(j))*abs(t(j)*(Omega_m_prime{i,j}(1,1)*exp(1i*thetaz(i,k,j))+Omega_m_prime{i,j}(2,1)*exp(-1i*thetaz(i,k,j))))^2;
-                A_z{i}(k,j)=(4*pi*imag(n(i,j))/lambda(j))*I_z{i}(k,j);
+                A_z{i}(k,j)=(4*pi*imag(n(i,j))/(lambda(j)/1e6))*I_z{i}(k,j);
                 LDOS_z{i}(k,j)=abs(1+Omega_m_prime{i,j}(2,1)*exp(-1i*thetaz(i,k,j))/(Omega_m_prime{i,j}(1,1)*exp(1i*thetaz(i,k,j))))^2;
             end
             for k=1:nb_steps(i)+1
-                thetaz_poynting{i}(k,j)=(k-1)*length_step*2*pi*n(i,j)/lambda(j);
+                thetaz_poynting{i}(k,j)=(k-1)*length_step*2*pi*n(i,j)/(lambda(j)/1e6);
                 I_poynting_z{i}(k,j)=abs(t(j))^2/real(n_0(j))*real(n_tot(i+1,j)*conj(Omega_m_prime{i,j}(1,1)*exp(1i*thetaz_poynting{i}(k,j))+Omega_m_prime{i,j}(2,1)*exp(-1i*thetaz_poynting{i}(k,j)))*(Omega_m_prime{i,j}(1,1)*exp(1i*thetaz_poynting{i}(k,j))-Omega_m_prime{i,j}(2,1)*exp(-1i*thetaz_poynting{i}(k,j))));
             end
             for k=1:nb_steps(i)
@@ -115,7 +115,7 @@ end
 %% Getting the energy vector
 
 if transform_E
-    E_A=fliplr(h*c./(q*lambda));
+    E_A=fliplr(h*c./(q*(lambda/1e6)));
     A_GaAs_E=fliplr(Abs_layer(2,:));
     Abs_layer_E=fliplr(Abs_layer);
     A_total_E=fliplr(A+T);
@@ -130,10 +130,10 @@ end
 %% Plots
 if cal_field==1
     figure
-    contourf(lambda*1e6,stack/1e3,I);
+    contourf(lambda,stack/1e3,I);
     hold all
     for i=1:nb_layers-1
-        plot([lambda(1),lambda(end)]*1e6,[sum(d(1:i)) sum(d(1:i))]/1e3,'linewidth',1,'color','w')
+        plot([lambda(1),lambda(end)],[sum(d(1:i)) sum(d(1:i))]/1e3,'linewidth',1,'color','w')
     end
     xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
     ylabel('depth $\: \mathrm{(\mu m)}$','Interpreter','Latex')
@@ -151,13 +151,13 @@ if cal_field==1
     ylim([0 inf])
 
     figure
-    plot(lambda*1e6,A+T,'linewidth',3);
-    % plot(lambda*1e6,1-R);
+    plot(lambda,A+T,'linewidth',3);
+    % plot(lambda,1-R);
     hold on
-    plot(lambda*1e6,A,'linewidth',2);
-    plot(lambda*1e6,T,'linewidth',2);
+    plot(lambda,A,'linewidth',2);
+    plot(lambda,T,'linewidth',2);
     ylim([0 1])
-    xlim([min(lambda)*1e6 max(lambda)*1e6])
+    xlim([min(lambda) max(lambda)])
     xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
     ylabel('$A$','Interpreter','Latex')
     set(gca,'Fontsize',16)

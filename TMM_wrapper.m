@@ -1,6 +1,6 @@
 clear all
 
-lambda=(0.920:0.001:1.340)*1e-6; %Wavelength vector
+lambda=(0.920:0.001:1.340); %Wavelength vector
 nb_lambda=width(lambda); %Number of wavelength
 
 cal_abs=1; % calculate the absorption and field intensity in each layer
@@ -13,19 +13,18 @@ spacer = 25;
 intensity = 12;
 
 %% List of layers
-
-n_0=1*ones(1,nb_lambda); %Incident medium
-n_end=retindice_metal(lambda*1e6,1.9); %Last medium
+n_0=ones(1,nb_lambda); %Incident medium
+n_end=retindice_metal(lambda,1.9); %Last medium
 
 % list of indices of the stack
-n(1,:)=retindice_semicond(lambda*1e6,40);
+n(1,:)=retindice_semicond(lambda,40);
 
 % list of thicknesses of the stack
 d(1)=1800;
 
 [I, ~, stack]=TMM(nb_lambda,lambda,cal_abs,cal_field,transform_E,n_0,n_end,n,d);
 
-I_mean = I(:,abs(lambda*1e6-1.192) < 0.001);    %I_mean = mean(I,2); % mean I for each hight
+I_mean = I(:,abs(lambda-1.192) < 0.0001);    %I_mean = mean(I,2); % mean I for each hight
 I_table = cat(2, I_mean, stack');
 I_sorted = sortrows(I_table(back_b:end-surf_b,:),'descend');
 
@@ -58,16 +57,16 @@ d_max = sum(d);
 d_temp=0;
 for i=1:height(QD_table)
   if d_temp<QD_table(i,2)
-      n(2*i-1,:) = retindice_semicond(lambda*1e6,40);
+      n(2*i-1,:) = retindice_semicond(lambda,40);
       d(2*i-1)   = (QD_table(i,2)-d_temp-1);
       q(2*i-1)   = 0;
-      n(2*i,:)   = retindice_semicond(lambda*1e6,81.1);
+      n(2*i,:)   = retindice_semicond(lambda,81.1);
       d(2*i)     = 1;
       q(2*i)     = 1;
       d_temp     = QD_table(i,2);
   end
 end
-n(width(d)+1,:) = retindice_semicond(lambda*1e6,40);
+n(width(d)+1,:) = retindice_semicond(lambda,40);
 d(width(d)+1)   = (d_max-d_temp);
 q(width(d)+1)   = 0;
 
@@ -76,13 +75,14 @@ q(width(d)+1)   = 0;
 I_mean=0;
 for j=1:length(q)
     if q(j)>0
-        I_mean=I_mean+0.1*I_z{j};
+        I_mean=I_mean+I_z{j};
     end
 end
+I_mean = I_mean/length(find(q==1));
 
 figure
-plot(lambda*1e6,I_mean,'Linewidth',3);
-xlim([min(lambda*1e6) max(lambda*1e6)])
+plot(lambda,I_mean,'Linewidth',3);
+xlim([min(lambda) max(lambda)])
 xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
 ylabel('Mean Absorption Enhancement','Interpreter','Latex')
 set(gca,'Fontsize',16)
