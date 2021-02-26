@@ -1,25 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-
-def graph_setting(figsize, lims, labels, label_positions, major_ticks, minor_ticks, invert_axis):
-    _fig, _ax = plt.subplots(figsize=figsize)
-    _ax.set_xlim(lims['x'])
-    _ax.set_ylim(lims['y'])
-    _ax.set_xlabel(labels['x'])
-    _ax.set_ylabel(labels['y'])
-    _ax.xaxis.set_label_position(label_positions['x'])
-    _ax.yaxis.set_label_position(label_positions['y'])
-    _ax.xaxis.set_ticks_position(label_positions['x'])
-    _ax.yaxis.set_ticks_position(label_positions['y'])
-    _ax.tick_params(axis='both', which='major', **major_ticks)
-    _ax.tick_params(axis='both', which='minor', **minor_ticks)
-    if invert_axis['x']:
-        _ax.invert_xaxis()
-    if invert_axis['y']:
-        _ax.invert_yaxis()
-    return _fig, _ax
-
 
 # Define parameters
 h=6.626e-34    # Planck's constant
