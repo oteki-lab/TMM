@@ -120,7 +120,9 @@ def cal_TMM(indice, wl_min, wl_max, layers, m_end):
 
     df_m = pd.DataFrame(material, columns=['material'])
     df_d = pd.DataFrame(stack, columns=['depth'])
-    df_I = pd.DataFrame(I, columns=(wl*1e9).astype(np.int64))
+    
+    w=np.arange(int(wl_min*1e3),int(wl_max*1e3)+1,1)
+    df_I = pd.DataFrame(I, columns=(w).astype(np.int64))
 
 
     return wl, R, T, A, df_d, df_m, df_I
