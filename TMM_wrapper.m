@@ -11,11 +11,11 @@ cal_field=1; % calculate the field intensity in each layer
 transform_E=0; % Transform the data into a function of energy
 
 % structure parameters
-back_b = 50;
-surf_b = 25;
-spacer = 25;
-intensity = 12;
-height_QD = 1;
+back_b = 50;        % [nm] Boundary on the back side
+surf_b = 25;        % [nm] Boundary on the front side
+spacer = 25;        % [nm] Minimum space between QD layers
+intensity = 12;     % [nm] Lower limit of the normalized field strength
+height_QD = 1;      % [nm] QD layer height
 
 %% without QD layers
 % List of layers
