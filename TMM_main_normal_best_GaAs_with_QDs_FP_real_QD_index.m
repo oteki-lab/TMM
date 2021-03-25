@@ -7,7 +7,7 @@ c=2.998e8; %Speed of light
 q=1.602e-19; % Elementary charge
 
 nb_lambda=400; %Number of wavelength
-lambda=linspace(0.92,1.34,nb_lambda)*1e-6; %Wavelength vector
+lambda=linspace(0.85,1.4,nb_lambda)*1e-6; %Wavelength vector
 length_step=1e-9; %discretization step of the stack, for intensity calculation
 
 cal_abs=1; % calculate the absorption and field intensity in each layer
@@ -21,6 +21,7 @@ n_end=retindice_metal(lambda*1e6,1.9); %Last medium
 % n_end=100i*ones(1,nb_lambda);
 
 % list of indices of the stack
+%n(1,:)=retindice_semicond(lambda*1e6,40);
 n(1,:)=retindice_semicond(lambda*1e6,40);
 n(2,:)=retindice_semicond(lambda*1e6,81.1);
 n(3,:)=retindice_semicond(lambda*1e6,40);
@@ -45,6 +46,7 @@ n(21,:)=retindice_semicond(lambda*1e6,40);
 
 
 % list of thicknesses of the stack
+%d(1)=1780e-9;
 d(1)=171e-9;
 d(2)=1e-9;
 d(3)=171e-9;
@@ -65,7 +67,7 @@ d(17)=171e-9;
 d(18)=1e-9;
 d(19)=171e-9;
 d(20)=1e-9;
-d(21)=62e-9;
+d(21)=60e-9;
 
 %% Initialization
 
@@ -191,8 +193,12 @@ end
 
 
 %% Plots
-
+%A_Total = A+T;
+%A_QD = A;
+%A_Mirror = T;
+load('A_theory.mat', 'A_Total', 'A_QD', 'A_Mirror')
 Icolors=lines(nb_layers);
+
 
 figure
 plot(lambda*1e6,A+T,'linewidth',3);
@@ -320,17 +326,17 @@ if cal_field==1
     
 end
 
-I_mean=0;
-for j=1:10
-    I_mean=I_mean+0.1*I_z{2*j};
-end
-
-figure
-plot(lambda*1e6,I_mean,'Linewidth',3);
-xlim([min(lambda*1e6) max(lambda*1e6)])
-xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
-ylabel('Mean Absorption Enhancement','Interpreter','Latex')
-set(gca,'Fontsize',16)
-set(gca,'XMinorTick','on','YMinorTick','on')
-set(gcf,'color','w');
-box on
+% I_mean=0;
+% for j=1:10
+%     I_mean=I_mean+0.1*I_z{2*j};
+% end
+% %save('Absorption_enhancement_theory.mat', 'I_mean', 'lambda')
+% figure
+% plot(lambda*1e6,I_mean,'Linewidth',3);
+% xlim([min(lambda*1e6) max(lambda*1e6)])
+% xlabel('$\lambda \: \mathrm{(\mu m)}$','Interpreter','Latex')
+% ylabel('Mean Absorption Enhancement','Interpreter','Latex')
+% set(gca,'Fontsize',16)
+% set(gca,'XMinorTick','on','YMinorTick','on')
+% set(gcf,'color','w');
+% box on
