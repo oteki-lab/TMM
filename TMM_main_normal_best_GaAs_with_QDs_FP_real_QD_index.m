@@ -7,7 +7,7 @@ c=2.998e8; %Speed of light
 q=1.602e-19; % Elementary charge
 
 nb_lambda=400; %Number of wavelength
-lambda=linspace(0.85,1.4,nb_lambda)*1e-6; %Wavelength vector
+lambda=linspace(0.98,1.38,nb_lambda)*1e-6; %Wavelength vector
 length_step=1e-9; %discretization step of the stack, for intensity calculation
 
 cal_abs=1; % calculate the absorption and field intensity in each layer
@@ -326,11 +326,11 @@ if cal_field==1
     
 end
 
-% I_mean=0;
-% for j=1:10
-%     I_mean=I_mean+0.1*I_z{2*j};
-% end
-% %save('Absorption_enhancement_theory.mat', 'I_mean', 'lambda')
+I_mean=0;
+for j=1:10
+    I_mean=I_mean+0.1*I_z{2*j};
+end
+save('Absorption_enhancement_theory.mat', 'I_mean', 'lambda')
 % figure
 % plot(lambda*1e6,I_mean,'Linewidth',3);
 % xlim([min(lambda*1e6) max(lambda*1e6)])
