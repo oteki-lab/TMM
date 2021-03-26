@@ -84,15 +84,16 @@ plot(wavelength/1000,ref_50,'linewidth',3)
 hold on
 plot(wavelength/1000,FP_50,'linewidth',3)
 xlabel('$\lambda \: (\mathrm{\mu m})$', 'Interpreter', 'LaTeX')
-ylabel('Photoluminescence (arb. units)','Interpreter','Latex')
+ylabel('PL intensity (arb. units)','Interpreter','Latex')
 set(gca,'Fontsize',16)
 set(gca,'XMinorTick','on','YMinorTick','on','YScale','log')
 set(gcf,'color','w');
 box on
-legend({'before', 'after'},'Interpreter','Latex')
+legend({'$\mathit{\Phi}_{\mathrm{0}}$', '$\mathit{\Phi}_{\mathrm{FP}}$'},'Interpreter','Latex')
 xlim([lambda_min/1000, lambda_max/1000])
 ylim([1 1e5])
 yticks([1 1e1 1e2 1e3 1e4 1e5])
+legend boxoff 
 
 % %PL spectra
 % figure
@@ -193,7 +194,7 @@ ylim([0 5])
 
 
 fig = figure;
-set(fig,'defaultAxesColorOrder',[[0 0 0]; [0 0 0]]);
+%set(fig,'defaultAxesColorOrder',[[0 0 0]; [0 0 0]]);
 %plot(wavelength,enhancement20/max(enhancement20(50:200)),'linewidth',2)
 yyaxis right
 plot(lambda/1000,I_mean,'--','linewidth',2,'color',[0.00 0.45 0.74])
